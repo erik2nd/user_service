@@ -8,19 +8,24 @@ public class InitSchema : Migration
     public override void Up()
     {
         Create.Table("users")
-            .WithColumn("Guid").AsGuid().PrimaryKey()
-            .WithColumn("Login").AsString().NotNullable().Unique()
-            .WithColumn("Password").AsString().NotNullable()
-            .WithColumn("Name").AsString().NotNullable()
-            .WithColumn("Gender").AsInt32().NotNullable()
-            .WithColumn("Birthday").AsDate().Nullable()
-            .WithColumn("Admin").AsBoolean().NotNullable()
-            .WithColumn("CreatedOn").AsDateTime().NotNullable()
-            .WithColumn("CreatedBy").AsString().NotNullable()
-            .WithColumn("ModifiedOn").AsDateTime().Nullable()
-            .WithColumn("ModifiedBy").AsString().Nullable()
-            .WithColumn("RevokedOn").AsDateTime().Nullable()
-            .WithColumn("RevokedBy").AsString().Nullable();
+            .WithColumn("guid").AsGuid().PrimaryKey()
+            .WithColumn("login").AsString().NotNullable().Unique()
+            .WithColumn("password").AsString().NotNullable()
+            .WithColumn("name").AsString().NotNullable()
+            .WithColumn("gender").AsInt32().NotNullable()
+            .WithColumn("birthday").AsDate().Nullable()
+            .WithColumn("admin").AsBoolean().NotNullable()
+            .WithColumn("created_on").AsDateTime().NotNullable()
+            .WithColumn("created_by").AsString().NotNullable()
+            .WithColumn("modified_on").AsDateTime().Nullable()
+            .WithColumn("modified_by").AsString().Nullable()
+            .WithColumn("revoked_on").AsDateTime().Nullable()
+            .WithColumn("revoked_by").AsString().Nullable();
+        
+        Execute.Sql(@"
+            insert into users values (gen_random_uuid(), 'admin',
+                'admin', 'admin', 2, null, true, now(), 'admin', now(), 'admin', null, null);
+            ");
     }
 
     public override void Down()

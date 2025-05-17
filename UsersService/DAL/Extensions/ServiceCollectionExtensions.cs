@@ -1,9 +1,6 @@
-﻿
-using UsersService.DAL.Infrastructure;
+﻿using UsersService.DAL.Infrastructure;
 using UsersService.DAL.Repositories;
 using UsersService.DAL.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace UsersService.DAL.Extensions;
 

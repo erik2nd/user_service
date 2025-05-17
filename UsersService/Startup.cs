@@ -10,9 +10,9 @@ namespace UsersService;
 
 public class Startup
 {
-    private readonly IConfigurationRoot _configuration;
+    private readonly IConfiguration _configuration;
     
-    public Startup(IConfigurationRoot configuration)
+    public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
     }
@@ -23,7 +23,10 @@ public class Startup
         services.AddSwaggerGen();
         services.AddFluentValidationAutoValidation();
         
-        services.AddValidatorsFromAssemblyContaining(typeof(UserDtoValidator));
+        services.AddValidatorsFromAssemblyContaining(typeof(CreateUserRequestValidator));
+        services.AddValidatorsFromAssemblyContaining(typeof(GetUserByLoginAndPasswordRequestValidator));
+        services.AddValidatorsFromAssemblyContaining(typeof(GetUsersByAgeRequestValidator));
+        services.AddValidatorsFromAssemblyContaining(typeof(UpdateUserProfileRequestValidator));
         
         services.AddMvc(options =>
             {
@@ -33,7 +36,7 @@ public class Startup
         services.AddScoped<IUserService, UserService>();
         
         services
-            .AddDalInfrastructure(_configuration)
+            .AddDalInfrastructure((IConfigurationRoot)_configuration)
             .AddDalRepositories();
     }
     
