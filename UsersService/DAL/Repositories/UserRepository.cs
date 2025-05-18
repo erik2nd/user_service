@@ -10,26 +10,6 @@ public class UserRepository : PgRepository, IUserRepository
 {
     public UserRepository(
         IOptions<DalOptions> dalSettings) : base(dalSettings.Value) { }
-    
-    public async Task<bool> LoginExistsAsync(string login, CancellationToken token)
-    {
-        const string sql = @"
-            select exists (
-                select 1
-                from users
-                where login = @Login
-            );
-            ";
-
-        await using var connection = await GetConnection();
-        var exists = await connection.ExecuteScalarAsync<bool>(
-            new CommandDefinition(
-                sql,
-                new { Login = login },
-                cancellationToken: token));
-
-        return exists;
-    }
 
     public async Task<Guid> CreateAsync(UserEntity user, CancellationToken token)
     {
@@ -202,5 +182,4 @@ public class UserRepository : PgRepository, IUserRepository
         await connection.ExecuteAsync(
             new CommandDefinition(sql, new { Login = login }, cancellationToken: token));
     }
-
 }

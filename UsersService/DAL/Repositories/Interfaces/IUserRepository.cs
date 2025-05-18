@@ -5,7 +5,6 @@ namespace UsersService.DAL.Repositories.Interfaces;
 
 public interface IUserRepository
 {
-    Task<bool> LoginExistsAsync(string login, CancellationToken token);
     Task<Guid> CreateAsync(UserEntity user, CancellationToken token);
     
     Task UpdateProfileAsync(string login, Dictionary<string, object> updatedFields, CancellationToken token);

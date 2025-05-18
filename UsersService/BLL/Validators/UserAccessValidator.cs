@@ -21,15 +21,6 @@ public class UserAccessValidator : IUserAccessValidator
         if (!user.Admin || user.RevokedOn != null)
             throw new ForbiddenException();
     }
-    
-    public async Task EnsureActiveAsync(string login, CancellationToken token)
-    {
-        var user = await _userRepository.GetByLoginAsync(login, token)
-                   ?? throw new NotFoundException();
-
-        if (user.RevokedOn != null)
-            throw new ForbiddenException();
-    }
 
     public async Task EnsureAdminOrSelfActiveAsync(string requesterLogin, string targetLogin, CancellationToken token)
     {
