@@ -32,7 +32,7 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
     
-    [HttpGet("[action]")]
+    [HttpPost("[action]")]
     public async Task<ActionResult<UserByLoginResponse>> GetUserByLogin(
         [FromBody] GetUserByLoginRequest request,
         [FromHeader(Name = "X-Login")] string requesterLogin,
@@ -109,7 +109,7 @@ public class UsersController : ControllerBase
         CancellationToken token)
     {
         await _userService.RestoreUserAsync(requesterLogin, request, token);
-        return NoContent();
+        return Ok();
     }
 
 }
