@@ -34,11 +34,11 @@ public class UsersController : ControllerBase
     
     [HttpGet("[action]")]
     public async Task<ActionResult<UserByLoginResponse>> GetUserByLogin(
-        [FromQuery] string login,
+        [FromBody] GetUserByLoginRequest request,
         [FromHeader(Name = "X-Login")] string requesterLogin,
         CancellationToken token)
     {
-        var result = await _userService.GetUserByLoginAsync(requesterLogin, login, token);
+        var result = await _userService.GetUserByLoginAsync(requesterLogin, request.Login, token);
         return Ok(result);
     }
     
@@ -72,5 +72,44 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
+    [HttpPut("[action]")]
+    public async Task<IActionResult> UpdateUserPassword(
+        [FromBody] UpdateUserPasswordRequest request,
+        [FromHeader(Name = "X-Login")] string requesterLogin,
+        CancellationToken token)
+    {
+        await _userService.UpdateUserPasswordAsync(requesterLogin, request, token);
+        return Ok();
+    }
+    
+    [HttpPut("[action]")]
+    public async Task<IActionResult> UpdateUserLogin(
+        [FromBody] UpdateUserLoginRequest request,
+        [FromHeader(Name = "X-Login")] string requesterLogin,
+        CancellationToken token)
+    {
+        await _userService.UpdateUserLoginAsync(requesterLogin, request, token);
+        return Ok();
+    }
+    
+    [HttpDelete("[action]")]
+    public async Task<IActionResult> DeleteUser(
+        [FromBody] DeleteUserRequest request,
+        [FromHeader(Name = "X-Login")] string requesterLogin,
+        CancellationToken token)
+    {
+        await _userService.DeleteUserAsync(requesterLogin, request, token);
+        return Ok();
+    }
+    
+    [HttpPost("[action]")]
+    public async Task<IActionResult> RestoreUser(
+        [FromBody] RestoreUserRequest request,
+        [FromHeader(Name = "X-Login")] string requesterLogin,
+        CancellationToken token)
+    {
+        await _userService.RestoreUserAsync(requesterLogin, request, token);
+        return NoContent();
+    }
 
 }

@@ -13,7 +13,7 @@ public class UserRepository : PgRepository, IUserRepository
     
     public async Task<bool> LoginExistsAsync(string login, CancellationToken token)
     {
-        const string sqlQuery = @"
+        const string sql = @"
             select exists (
                 select 1
                 from users
@@ -24,7 +24,7 @@ public class UserRepository : PgRepository, IUserRepository
         await using var connection = await GetConnection();
         var exists = await connection.ExecuteScalarAsync<bool>(
             new CommandDefinition(
-                sqlQuery,
+                sql,
                 new { Login = login },
                 cancellationToken: token));
 
@@ -33,7 +33,7 @@ public class UserRepository : PgRepository, IUserRepository
 
     public async Task<Guid> CreateAsync(UserEntity user, CancellationToken token)
     {
-        const string sqlQuery = @"
+        const string sql = @"
             insert into users (
                 guid, login, password, name, gender, birthday,
                 admin, created_on, created_by
@@ -46,7 +46,7 @@ public class UserRepository : PgRepository, IUserRepository
         await using var connection = await GetConnection();
         await connection.ExecuteAsync(
             new CommandDefinition(
-                sqlQuery,
+                sql,
                 new
                 {
                     user.Guid,
@@ -66,7 +66,7 @@ public class UserRepository : PgRepository, IUserRepository
     
     public async Task<UserEntity?> GetByLoginAsync(string login, CancellationToken token)
     {
-        const string sqlQuery = @"
+        const string sql = @"
             select *
             from users
             where login = @Login
@@ -75,12 +75,12 @@ public class UserRepository : PgRepository, IUserRepository
 
         await using var connection = await GetConnection();
         return await connection.QueryFirstOrDefaultAsync<UserEntity>(
-            new CommandDefinition(sqlQuery, new { Login = login }, cancellationToken: token));
+            new CommandDefinition(sql, new { Login = login }, cancellationToken: token));
     }
     
     public async Task<IEnumerable<UserEntity>> GetAllActiveAsync(CancellationToken token)
     {
-        const string sqlQuery = @"
+        const string sql = @"
             select 
                 *
             from users
@@ -90,7 +90,7 @@ public class UserRepository : PgRepository, IUserRepository
 
         await using var connection = await GetConnection();
         var users = await connection.QueryAsync<UserEntity>(
-            new CommandDefinition(sqlQuery, cancellationToken: token));
+            new CommandDefinition(sql, cancellationToken: token));
     
         return users.ToArray();
     }
@@ -121,6 +121,86 @@ public class UserRepository : PgRepository, IUserRepository
         await using var connection = await GetConnection();
         await connection.ExecuteAsync(
             new CommandDefinition(sql, parameters, cancellationToken: token));
+    }
+    
+    public async Task UpdatePasswordAsync(string login, string newPassword, DateTime modifiedOn, string modifiedBy,
+        CancellationToken token)
+    {
+        const string sql = @"
+            update users 
+            set password = @Password,
+                modified_on = @ModifiedOn,
+                modified_by = @ModifiedBy
+            where login = @Login";
+
+        await using var connection = await GetConnection();
+        await connection.ExecuteAsync(
+            new CommandDefinition(
+                sql,
+                new { Login = login, Password = newPassword, ModifiedOn = modifiedOn, ModifiedBy = modifiedBy },
+                cancellationToken: token));
+    }
+    
+    public async Task UpdateLoginAsync(string currentLogin, string newLogin, DateTime modifiedOn, string modifiedBy,
+        CancellationToken token)
+    {
+        const string sql = @"
+            update users
+            set login = @NewLogin,
+                modified_on = @ModifiedOn,
+                modified_by = @ModifiedBy
+            where login = @CurrentLogin";
+
+        await using var connection = await GetConnection();
+        await connection.ExecuteAsync(
+            new CommandDefinition(
+                sql,
+                new
+                {
+                    CurrentLogin = currentLogin,
+                    NewLogin = newLogin,
+                    ModifiedOn = modifiedOn,
+                    ModifiedBy = modifiedBy
+                },
+                cancellationToken: token));
+    }
+    
+    public async Task SoftDeleteAsync(string login, DateTime revokedOn, string revokedBy, CancellationToken token)
+    {
+        const string sql = @"
+            update users
+            set revoked_on = @RevokedOn,
+                revoked_by = @RevokedBy
+            where login = @Login";
+
+        await using var connection = await GetConnection();
+        await connection.ExecuteAsync(
+            new CommandDefinition(
+                sql,
+                new { Login = login, RevokedOn = revokedOn, RevokedBy = revokedBy },
+                cancellationToken: token));
+    }
+
+    public async Task HardDeleteAsync(string login, CancellationToken token)
+    {
+        const string sql = "delete from users where login = @Login";
+
+        await using var connection = await GetConnection();
+        await connection.ExecuteAsync(
+            new CommandDefinition(sql, new { Login = login }, cancellationToken: token));
+    }
+
+    public async Task RestoreAsync(string login, CancellationToken token)
+    {
+        const string sql = @"
+            update users
+            set revoked_on = null,
+                revoked_by = null
+            where login = @Login";
+
+        await using var connection = await GetConnection();
+        await connection.ExecuteAsync(
+            new CommandDefinition(sql, new { Login = login }, cancellationToken: token));
     }
 
 }

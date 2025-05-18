@@ -4,7 +4,7 @@ public record UserEntity
 {
     public Guid Guid { get; init; }
     public required string Login { get; init; }
-    public required string Password { get; init; } 
+    public required string Password { get; set; } 
     public required string Name { get; set; }
     public int Gender { get; set; }
     public DateTime? Birthday { get; set; }

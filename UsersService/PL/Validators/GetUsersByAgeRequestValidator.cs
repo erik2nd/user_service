@@ -9,6 +9,7 @@ public class GetUsersByAgeRequestValidator : AbstractValidator<UsersByAgeRequest
     public GetUsersByAgeRequestValidator()
     {
         RuleFor(x => x.Age)
-            .GreaterThanOrEqualTo(0).WithMessage("Age must be equal or greater than zero");
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("Age must be equal or greater than zero");
     }
 }
