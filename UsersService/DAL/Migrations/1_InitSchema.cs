@@ -23,8 +23,8 @@ public class InitSchema : Migration
             .WithColumn("revoked_by").AsString().Nullable();
         
         Execute.Sql(@"
-            insert into users values (gen_random_uuid(), 'admin',
-                'admin', 'admin', 2, null, true, now(), 'admin', now(), 'admin', null, null);
+            insert into users values (gen_random_uuid(), 'Admin',
+                'Admin', 'Admin', 2, null, true, now(), 'Admin', now(), 'Admin', null, null);
             ");
     }
 
